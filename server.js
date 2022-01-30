@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
 const { redirect } = require('express/lib/response');
 const res = require('express/lib/response');
+const req = require('express/lib/request');
 
 app.set('view engine', 'ejs');
 
@@ -22,11 +23,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //__dirname + '/html파일' 하면 해당 경로 겟 요청시 html파일을 로드한다.
 app.get('/',function(req, rsp){
-    rsp.sendFile(__dirname + '/index.html');
+    rsp.render('index.ejs');
 })
 
 app.get('/write', function(req, rsp) { 
-    rsp.sendFile(__dirname +'/write.html')
+    rsp.render('write.ejs')
   });
 
 app.get('/list', function(req, rsp){
@@ -41,7 +42,7 @@ app.post('/add', function(req, rsp){
     // totalPostNum 변수를 생성하여 응답.totalPost(전체 post 수)를 초기화한다.
     db.collection('counter').findOne({name: 'postNum'}, function(err, res){
         let totalPostNum = res.totalPost;
-        db.collection('post').insertOne({_id: (totalPostNum+1), title: req.body.title, date: req.body.date}, function(){
+        db.collection('post').insertOne({_id: (totalPostNum+1), title: req.body.title, date: req.body.date, text: req.body.text}, function(){
             console.log('save completed');
             rsp.redirect('http://localhost:8000/list')
             //AutoIncreament 속성 $set : {바꿀 key: 바꿀 value} // $inc : {바꿀 key: 바꿀 value} 기존값에 증가값
@@ -57,6 +58,18 @@ app.delete('/delete', function(req, rsp){
     //.deleteOne({쿼리}, )
     db.collection('post').deleteOne(req.body, function(err, res){
         console.log('삭제완료');
-        rsp.status(200);
+        rsp.status(200).send({message : 'success'});
     })
+})
+
+app.get('/read/:id', function(req, rsp){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, res){
+        console.log(res);
+    rsp.render('read.ejs',{ data : res});
+    if(err) console.log(err);
+    })
+})
+
+app.get('edit/:id',function(req,rsp){
+    rsp.render('edit.ejs')
 })
