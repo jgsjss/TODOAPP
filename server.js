@@ -46,11 +46,13 @@ passport.use(new LocalStrategy({
     passReqToCallback: false,
 }, function(inputId, inputPw, done){
     console.log(inputId, inputPw);
-    db.collection('signin').findOne({id: inputId}, function(err, res){
+    db.collection('member').findOne({userId: inputId}, function(err, res){
+        console.log(res.userPw)
         if(err) return done(err)
         //done((서버에러),(성공시 db데이터),(에러메세지))
         if(!res) return done(null, false, {message: 'ID가 틀렸거나 존재하지 않습니다.'})
-        if(inputPw == res.pw){
+        if(inputPw == res.userPw){
+            console.log('로그인 성공')
             return done(null, res)
         }else{
             return done(null, false, {message: '비밀번호가 일치하지 않습니다.'})
@@ -59,22 +61,20 @@ passport.use(new LocalStrategy({
 }));
 //세션을 저장시키는 코드(로그인 성공시 발동)
 passport.serializeUser(function (user, done) {
-    done(null, user.id)
+    done(null, user.userId)
   });
-
 //세션데이터를 가진 사람을 db에서 찾는 코드  
-passport.deserializeUser(function (userId, done) {
-    db.collection('member').findOne({id: userId}, function(err, res){
-        done(null, {})
+passport.deserializeUser(function (id, done) {
+    db.collection('member').findOne({userId : id}, function(err, res){
+        done(null, res)
     })
   }); 
 //로그인체크 메소드
-
 function isLogin(req, rsp, nmext){
     if(req.user){
         nmext()
     }else{
-        rsp.redirect('/signin')
+        rsp.send('회원만 이용 가능합니다.');
     }
 }
 
@@ -146,9 +146,8 @@ app.get('/signin', function(req, rsp){
     rsp.render('signin.ejs');
 })
 
-app.post('/signin', passport.authenticate('local', {failureRedirect: '/'})
+app.post('/signin', passport.authenticate('local', {failureRedirect: '/fail'})
     , function(req, rsp){
-        
     rsp.redirect('/');
 })
 
@@ -157,7 +156,7 @@ app.get('/signup', function(req, rsp){
 })
 
 app.post('/signup', function(req, rsp){
-    db.collection('member').insertOne({userId : req.body.userId, userPw: req.body.userPw, userName: req.body.userName, userPhoneNum: req.body.userPhoneNum}, function(err, res){
+    db.collection('member').insertOne({userId : req.body.userId, userPw: req.body.userPw, userName: req.body.userName, userEmail: req.body.email, userPhoneNum: req.body.userPhoneNum}, function(err, res){
         console.log('save completed');
     rsp.status(200).redirect('/signin')
     if(err)console.log(err)
