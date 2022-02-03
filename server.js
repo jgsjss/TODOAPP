@@ -3,31 +3,87 @@ const app = express();
 const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
 const { redirect } = require('express/lib/response');
-const res = require('express/lib/response');
+const rsp = require('express/lib/response');
 const req = require('express/lib/request');
+const methodOverride = require('method-override');
+const { Db } = require('mongodb');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+const usersRouter = require('./routes/users')
 
+const bcrypt = require('bcrypt')
+require('dotenv').config();
 app.set('view engine', 'ejs');
 
 let db;
-MongoClient.connect('mongodb+srv://admin:1234@cluster0.lkny9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', function(err, client){
+MongoClient.connect(process.env.DB_URL, function(err, client){
     if(err) return console.log(err);
 
     db = client.db('Todo')
 
-    app.listen(8000, function(){
+    app.listen(process.env.PORT, function(){
         console.log('listening on 8000');
     });
 })
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-//__dirname + '/html파일' 하면 해당 경로 겟 요청시 html파일을 로드한다.
+app.use(methodOverride('_method'))
+
+app.use(session({secret : '비밀코드', resave : true, saveUninitialized: false}));
+
+app.use(passport.initialize());
+
+app.use(passport.session());
+
+
+//사용자pw를 암호화 하지 않았기에 보안이 쓰레기
+passport.use(new LocalStrategy({
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,
+    passReqToCallback: false,
+}, function(inputId, inputPw, done){
+    console.log(inputId, inputPw);
+    db.collection('signin').findOne({id: inputId}, function(err, res){
+        if(err) return done(err)
+        //done((서버에러),(성공시 db데이터),(에러메세지))
+        if(!res) return done(null, false, {message: 'ID가 틀렸거나 존재하지 않습니다.'})
+        if(inputPw == res.pw){
+            return done(null, res)
+        }else{
+            return done(null, false, {message: '비밀번호가 일치하지 않습니다.'})
+        }
+    })
+}));
+//세션을 저장시키는 코드(로그인 성공시 발동)
+passport.serializeUser(function (user, done) {
+    done(null, user.id)
+  });
+
+//세션데이터를 가진 사람을 db에서 찾는 코드  
+passport.deserializeUser(function (userId, done) {
+    db.collection('member').findOne({id: userId}, function(err, res){
+        done(null, {})
+    })
+  }); 
+//로그인체크 메소드
+
+function isLogin(req, rsp, nmext){
+    if(req.user){
+        nmext()
+    }else{
+        rsp.redirect('/signin')
+    }
+}
+
 app.get('/',function(req, rsp){
     rsp.render('index.ejs');
 })
 
-app.get('/write', function(req, rsp) { 
-    rsp.render('write.ejs')
+app.get('/write', isLogin, function(req, rsp) { 
+    rsp.render('write.ejs',{user: req.user})
   });
 
 app.get('/list', function(req, rsp){
@@ -69,7 +125,43 @@ app.get('/read/:id', function(req, rsp){
     if(err) console.log(err);
     })
 })
+//수정버튼 클릭시
+app.get('/edit/:id',function(req,rsp){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, res){
+    rsp.render('edit.ejs', { post : res });
+    if(err)console.log(err)
+    })
+})
 
-app.get('edit/:id',function(req,rsp){
-    rsp.render('edit.ejs')
+app.put('/edit', function(req, rsp){
+    //$set은 업데이트 혹은 널값이면 인서트.
+    db.collection('post').updateOne({_id : parseInt(req.body.id) },
+    { $set : { title : req.body.title, date : req.body.date, text : req.body.text } }, function(err, res){
+        console.log('수정완료');
+        rsp.redirect('/list')
+    })
+})
+
+app.get('/signin', function(req, rsp){
+    rsp.render('signin.ejs');
+})
+
+app.post('/signin', passport.authenticate('local', {failureRedirect: '/'})
+    , function(req, rsp){
+        
+    rsp.redirect('/');
+})
+
+app.get('/signup', function(req, rsp){
+    rsp.render('signup.ejs');
+})
+
+app.post('/signup', function(req, rsp){
+    db.collection('member').insertOne({userId : req.body.userId, userPw: req.body.userPw, userName: req.body.userName, userPhoneNum: req.body.userPhoneNum}, function(err, res){
+        console.log('save completed');
+    rsp.status(200).redirect('/signin')
+    if(err)console.log(err)
+    })
+    
+
 })

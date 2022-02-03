@@ -15,11 +15,12 @@
       <div class="container mt-4">
         <div class="card" style="width: 100%">
             <div class="card-body">
+              <h6>글번호 : <%= data._id %></h6>
               <h5 class="card-title">제목 : <%= data.title %></h5>
               <h6>날짜: <%= data.date %></h6>
               <p class="card-text">내용: <%= data.text %></p>
-              <a href="/views/list.ejs" class="btn btn-primary">목록으로</a>
-              <a href="" class="btn btn-dark">수정하기</a>
+              <a href="http://localhost:8000/list" class="btn btn-primary">목록으로</a>
+              <a href="http://localhost:8000/edit/<%= data._id %>" class="btn btn-dark">수정하기</a>
             </div>
           </div>
     </div>  
