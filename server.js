@@ -22,6 +22,8 @@ let db;
 MongoClient.connect(process.env.DB_URL, function (err, client) {
     if (err) return console.log(err);
     db = client.db('Todo')
+    app.db = db;
+
     app.listen(process.env.PORT, function () {
         console.log('listening on 8000');
     });
