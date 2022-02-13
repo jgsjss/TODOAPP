@@ -22,6 +22,7 @@ let db;
 MongoClient.connect(process.env.DB_URL, function (err, client) {
     if (err) return console.log(err);
     db = client.db('Todo')
+    //라우터로 분리한 코드에서 몽고db 기능을 사용하려면 app.db = db; 작성한다.
     app.db = db;
 
     app.listen(process.env.PORT, function () {
@@ -48,10 +49,11 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')))
 
-// app.use('/post', postRouter);
+app.use('/post', postRouter);
 
 
 //사용자pw를 암호화 하지 않았기에 보안이 쓰레기
+
 passport.use(new LocalStrategy({
     usernameField: 'id',
     passwordField: 'pw',
