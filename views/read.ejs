@@ -47,10 +47,10 @@
         }).done((res) => {
           if(res.message == "success") {
             alert('삭제가 완료되었습니다.')
-            window.location.replace('http://localhost:8000/list')
+            window.location.replace('http://localhost:8000/post/list')
           } else{
             alert('본인이 작성한 글만 삭제 가능합니다.')
-            window.location.replace('http://localhost:8000/read/postNo')
+            window.location.replace('http://localhost:8000/post/read/postNo')
 
           }
         }).err(() => {

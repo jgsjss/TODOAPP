@@ -25,7 +25,6 @@
             <h5 scope="row">No: <%= posts[i]._id %></h5>
             <h5><a href="http://localhost:8000/read/<%= posts[i]._id %>"> 제목: <%= posts[i].title %></h5></a>
             <h5>날짜: <%= posts[i].date %></h5>
-            <button class="delete btn btn-danger" data-id="<%= posts[i]._id %>">삭제</button>
           </li>
           <% } %> 
           </ul>
@@ -40,21 +39,21 @@
   
     <script>
 
-      $('.delete').click(function(e){
-        let postNo = e.target.dataset.id;
-        //클릭한 html 요소
-        let clickBtn = $(this);
-        $.ajax({
-          method: 'DELETE',
-          url: '/delete',
-          data: {_id: postNo}
-          //done(function(){}) 를 안쓴이유는 그래야 $(this) 값이 변형되지 않기때문이다.
-        }).done((res)=>{
-          clickBtn.parent('li').fadeOut();
-        }).fail(function(xhr, textStatus, errorThrown){
-          console.log(xhr, textStatus, errorThrown);
-        });
-      })
+      // $('.delete').click(function(e){
+      //   let postNo = e.target.dataset.id;
+      //   //클릭한 html 요소
+      //   let clickBtn = $(this);
+      //   $.ajax({
+      //     method: 'DELETE',
+      //     url: '/post/delete',
+      //     data: {_id: postNo}
+      //     //done(function(){}) 를 안쓴이유는 그래야 $(this) 값이 변형되지 않기때문이다.
+      //   }).done((res)=>{
+      //     clickBtn.parent('li').fadeOut();
+      //   }).fail(function(xhr, textStatus, errorThrown){
+      //     console.log(xhr, textStatus, errorThrown);
+      //   });
+      // })
       
       $('#search').click(function(){
         let inputValue = $('#search-input').val();

@@ -1,17 +1,17 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
-const MongoClient = require('mongodb').MongoClient;
 const {redirect} = require('express/lib/response');
 const rsp = require('express/lib/response');
 const req = require('express/lib/request');
 const methodOverride = require('method-override');
-const {Db} = require('mongodb');
+const postRouter = require('./routes/post.js');
+const path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const usersRouter = require('./routes/users')
-const path = require('path');
+const {Db} = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
 
 const bcrypt = require('bcrypt')
@@ -21,13 +21,13 @@ app.set('view engine', 'ejs');
 let db;
 MongoClient.connect(process.env.DB_URL, function (err, client) {
     if (err) return console.log(err);
-
     db = client.db('Todo')
-
     app.listen(process.env.PORT, function () {
         console.log('listening on 8000');
     });
 })
+
+
 
 // app.use(express.static(path.join(__dirname, '../public')))
 
@@ -41,6 +41,12 @@ app.use(session({secret: '비밀코드', resave: true, saveUninitialized: false}
 app.use(passport.initialize());
 
 app.use(passport.session());
+//express 내장기능 json 사용
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')))
+
+// app.use('/post', postRouter);
 
 
 //사용자pw를 암호화 하지 않았기에 보안이 쓰레기
@@ -83,6 +89,10 @@ function isLogin(req, rsp, next) {
         rsp.write("<head><meta charset='UTF-8'><script>alert('로그인 후 이용가능합니다.'); location.replace('http://localhost:8000/signin');</script></head>")
     }
 }
+
+app.get('/', function (req, rsp) {
+    rsp.render('index.ejs');
+})
 
 app.get('/signin', function (req, rsp) {
     rsp.render('signin.ejs');
@@ -255,3 +265,4 @@ app.get('/search', (req, rsp) => {
         rsp.render('search.ejs', {posts: res});
     })
 })
+
