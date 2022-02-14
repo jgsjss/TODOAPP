@@ -20,8 +20,8 @@
               <h5 class="card-title">제목 : <%= data.title %></h5>
               <h6>날짜: <%= data.date %></h6>
               <p class="card-text">내용: <%= data.text %></p>
-              <a href="http://localhost:8000/list" class="btn btn-primary">목록으로</a>
-              <a href="http://localhost:8000/edit/<%= data._id %>" class="btn btn-dark">수정하기</a>
+              <a href="http://localhost:8000/post/list" class="btn btn-primary">목록으로</a>
+              <a href="http://localhost:8000/post/edit/<%= data._id %>" class="btn btn-dark">수정하기</a>
               <button class="delete btn btn-danger" data-id="<%= data._id %>">삭제</button>
 
             </div>
@@ -41,7 +41,7 @@
         // let clickBtn = $(this);
         $.ajax({
           method: 'DELETE',
-          url: '/delete',
+          url: '/post/delete',
           data: {_id: postNo}
           //done(function(){}) 를 안쓴이유는 그래야 $(this) 값이 변형되지 않기때문이다.
         }).done((res) => {

@@ -6,7 +6,8 @@ function isLogin(req, rsp, next) {
     if (req.user) {
         next()
     } else {
-        rsp.write("<head><meta charset='UTF-8'><script>alert('로그인 후 이용가능합니다.'); location.replace('http:localhost:8000/signin');</script></head>")
+        // rsp.write("<head><meta charset='UTF-8'><script>alert('로그인 후 이용가능합니다.');</script></head>")
+        rsp.redirect('/signin')
     }
 }
 
@@ -40,12 +41,11 @@ router.post('/add', function (req, rsp) {
             date: req.body.date,
             text: req.body.text
         }
-
         req.app.db.collection('post').insertOne(saveData, function () {
             console.log('save completed');
-            rsp.redirect('http:localhost:8000/list')
+            rsp.redirect('/post/list')
             // AutoIncreament 속성 $set : {바꿀 key: 바꿀 value}  $inc : {바꿀 key: 바꿀 value} 기존값에 증가값
-            db.collection('counter').updateOne({name: 'postNum'}, {$inc: {totalPost: 1}}, function (err, res) {
+            req.app.db.collection('counter').updateOne({name: 'postNum'}, {$inc: {totalPost: 1}}, function (err, res) {
                 if (err) return console.log(err);
             })
         });
@@ -85,12 +85,17 @@ router.get('/edit/:id', function (req, rsp) {
 
     let editData = {_id: parseInt(req.params.id), writer: req.user.userId}
 
-    req.app.db.collection('post').findOne(editData, function (err, res) {
-        if (!err) {
-            rsp.status(200).render('edit.ejs', {post: res});
+    req.app.db.collection('post').findOne(editData, function (err, res, next) {
+        console.log(err)
+        console.log(res)
+        if (res != null) {
+            // if(res.user.userId == editData.writer) {
+                rsp.status(200).render('edit.ejs', {post: res});
+            // }else{
+            //     next();
+            // }
         } else {
-            console.log(err)
-            rsp.status(401).write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace(`http:localhost:8000/list}`)</script> </head>")
+            rsp.status(401).write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace(`/post/list`)</script> </head>")
         }
     })
 })
@@ -100,7 +105,7 @@ router.put('/edit', function (req, rsp) {
     req.app.db.collection('post').updateOne({_id: parseInt(req.body.id)},
         {$set: {title: req.body.title, date: req.body.date, text: req.body.text}}, function (err, res) {
             console.log('수정완료');
-            rsp.redirect('/list')
+            rsp.redirect('/post/list')
         })
 })
 

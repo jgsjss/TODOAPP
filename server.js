@@ -14,6 +14,7 @@ const {Db} = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
 
 
+
 const bcrypt = require('bcrypt')
 require('dotenv').config();
 app.set('view engine', 'ejs');
@@ -86,13 +87,13 @@ passport.deserializeUser(function (id, done) {
 });
 
 //로그인체크 메소드
-function isLogin(req, rsp, next) {
-    if (req.user) {
-        next()
-    } else {
-        rsp.write("<head><meta charset='UTF-8'><script>alert('로그인 후 이용가능합니다.'); location.replace('http://localhost:8000/signin');</script></head>")
-    }
-}
+// function isLogin(req, rsp, next) {
+//     if (req.user) {
+//         next()
+//     } else {
+//         rsp.write("<head><meta charset='UTF-8'><script>alert('로그인 후 이용가능합니다.'); location.replace('http://localhost:8000/signin');</script></head>")
+//     }
+// }
 
 app.get('/', function (req, rsp) {
     rsp.render('index.ejs');
@@ -123,7 +124,7 @@ app.post('/signup', async function (req, rsp) {
                 userEmail: req.body.email,
                 userPhoneNum: req.body.userPhoneNum
             }, function (err, res) {
-                console.log('save completed');
+                console.log('signup completed');
                 rsp.status(200).redirect('/signin')
                 if (err) console.log(err)
             })
@@ -134,99 +135,99 @@ app.post('/signup', async function (req, rsp) {
 })
 
 
-app.get('/', function (req, rsp) {
-    rsp.render('index.ejs');
-})
-
-app.get('/write', isLogin, function (req, rsp) {
-    rsp.render('write.ejs', {user: req.user})
-});
-
-app.get('/list', isLogin, function (req, rsp) {
-    db.collection('post').find().toArray(function (err, res) {
-        console.log(res);
-        rsp.render('list.ejs', {posts: res})
-    });
-});
-
-app.post('/add', function (req, rsp) {
-    //counter 콜렉션에서 name: postNum 가 있는 document를 찾는다. 
-    // totalPostNum 변수를 생성하여 응답.totalPost(전체 post 수)를 초기화한다.
-    //req.user 유저정보가 JSON 형식으로 저장되어있다.
-    console.log(req.user.userName)
-    db.collection('counter').findOne({name: 'postNum'}, function (err, res) {
-        let totalPostNum = res.totalPost;
-        let saveData = {
-            _id: (totalPostNum + 1),
-            writer: req.user.userId,
-            title: req.body.title,
-            date: req.body.date,
-            text: req.body.text
-        }
-
-        db.collection('post').insertOne(saveData, function () {
-            console.log('save completed');
-            rsp.redirect('http://localhost:8000/list')
-            //AutoIncreament 속성 $set : {바꿀 key: 바꿀 value} // $inc : {바꿀 key: 바꿀 value} 기존값에 증가값
-            db.collection('counter').updateOne({name: 'postNum'}, {$inc: {totalPost: 1}}, function (err, res) {
-                if (err) return console.log(err);
-            })
-        });
-    });
-});
-
-app.delete('/delete',  function (req, rsp) {
-    req.body._id = parseInt(req.body._id);
-
-    let deleteData = {_id: req.body._id, writer: req.user.userId}
-
-    //.deleteOne({쿼리}, )
-    db.collection('post').deleteOne(deleteData,  function (err, res) {
-        if (res) {
-            rsp.status(200).send({message: 'success'});
-            console.log('삭제완료');
-        }else {
-            console.log(err)
-            rsp.status(401).send({message: 'failed'})
-        }
-    })
-})
-
-app.get('/read/:id', function (req, rsp) {
-    db.collection('post').findOne({_id: parseInt(req.params.id)}, function (err, res) {
-        if (res) {
-            console.log(res);
-            rsp.render('read.ejs', {data: res});
-        }
-        if (err) {
-            console.log(err);
-
-        }
-    })
-})
-//수정버튼 클릭시
-app.get('/edit/:id', function (req, rsp) {
-
-    let editData = {_id: parseInt(req.params.id), writer: req.user.userId}
-
-    db.collection('post').findOne(editData, function (err, res) {
-        if (!err) {
-            rsp.status(200).render('edit.ejs', {post: res});
-        } else {
-            console.log(err)
-            rsp.status(401).write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace(`http://localhost:8000/list}`)</script> </head>")
-        }
-    })
-})
-
-app.put('/edit', function (req, rsp) {
-    //$set은 업데이트 혹은 널값이면 인서트.
-    db.collection('post').updateOne({_id: parseInt(req.body.id)},
-        {$set: {title: req.body.title, date: req.body.date, text: req.body.text}}, function (err, res) {
-            console.log('수정완료');
-            rsp.redirect('/list')
-        })
-})
+// app.get('/', function (req, rsp) {
+//     rsp.render('index.ejs');
+// })
+//
+// app.get('/write', isLogin, function (req, rsp) {
+//     rsp.render('write.ejs', {user: req.user})
+// });
+//
+// app.get('/list', isLogin, function (req, rsp) {
+//     db.collection('post').find().toArray(function (err, res) {
+//         console.log(res);
+//         rsp.render('list.ejs', {posts: res})
+//     });
+// });
+//
+// app.post('/add', function (req, rsp) {
+//     //counter 콜렉션에서 name: postNum 가 있는 document를 찾는다.
+//     // totalPostNum 변수를 생성하여 응답.totalPost(전체 post 수)를 초기화한다.
+//     //req.user 유저정보가 JSON 형식으로 저장되어있다.
+//     console.log(req.user.userName)
+//     db.collection('counter').findOne({name: 'postNum'}, function (err, res) {
+//         let totalPostNum = res.totalPost;
+//         let saveData = {
+//             _id: (totalPostNum + 1),
+//             writer: req.user.userId,
+//             title: req.body.title,
+//             date: req.body.date,
+//             text: req.body.text
+//         }
+//
+//         db.collection('post').insertOne(saveData, function () {
+//             console.log('save completed');
+//             rsp.redirect('http://localhost:8000/list')
+//             //AutoIncreament 속성 $set : {바꿀 key: 바꿀 value} // $inc : {바꿀 key: 바꿀 value} 기존값에 증가값
+//             db.collection('counter').updateOne({name: 'postNum'}, {$inc: {totalPost: 1}}, function (err, res) {
+//                 if (err) return console.log(err);
+//             })
+//         });
+//     });
+// });
+//
+// app.delete('/delete',  function (req, rsp) {
+//     req.body._id = parseInt(req.body._id);
+//
+//     let deleteData = {_id: req.body._id, writer: req.user.userId}
+//
+//     //.deleteOne({쿼리}, )
+//     db.collection('post').deleteOne(deleteData,  function (err, res) {
+//         if (res) {
+//             rsp.status(200).send({message: 'success'});
+//             console.log('삭제완료');
+//         }else {
+//             console.log(err)
+//             rsp.status(401).send({message: 'failed'})
+//         }
+//     })
+// })
+//
+// app.get('/read/:id', function (req, rsp) {
+//     db.collection('post').findOne({_id: parseInt(req.params.id)}, function (err, res) {
+//         if (res) {
+//             console.log(res);
+//             rsp.render('read.ejs', {data: res});
+//         }
+//         if (err) {
+//             console.log(err);
+//
+//         }
+//     })
+// })
+// //수정버튼 클릭시
+// app.get('/edit/:id', function (req, rsp) {
+//
+//     let editData = {_id: parseInt(req.params.id), writer: req.user.userId}
+//
+//     db.collection('post').findOne(editData, function (err, res) {
+//         if (!err) {
+//             rsp.status(200).render('edit.ejs', {post: res});
+//         } else {
+//             console.log(err)
+//             rsp.status(401).write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace(`http://localhost:8000/list}`)</script> </head>")
+//         }
+//     })
+// })
+//
+// app.put('/edit', function (req, rsp) {
+//     //$set은 업데이트 혹은 널값이면 인서트.
+//     db.collection('post').updateOne({_id: parseInt(req.body.id)},
+//         {$set: {title: req.body.title, date: req.body.date, text: req.body.text}}, function (err, res) {
+//             console.log('수정완료');
+//             rsp.redirect('/list')
+//         })
+// })
 
 
 //해결책 1. 검색할 문서의 양을 제한을 둡니다.
@@ -261,7 +262,7 @@ app.get('/search', (req, rsp) => {
         //        { $limit : 10 }  검색게시글 10개로 제한
         {$limit: 10},
         //         { $project : { title : 1, _id : 0}}  원하는 항목만 보여줌, 0은 nonedisplay
-        {$project: {title: 1, _id: 0}}
+        // {$project: {title: 1, _id: 0}}
     ]
     console.log("검색키워드", req.query)
     db.collection('post').aggregate(keyword).toArray((err, res) => {

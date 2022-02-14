@@ -23,7 +23,7 @@
           <% for(let i = 0; i< posts.length ; i++){ %>
             <li class="list-group-item mt-3">
             <h5 scope="row">No: <%= posts[i]._id %></h5>
-            <h5><a href="http://localhost:8000/read/<%= posts[i]._id %>"> 제목: <%= posts[i].title %></h5></a>
+            <h5><a href="http://localhost:8000/post/read/<%= posts[i]._id %>"> 제목: <%= posts[i].title %></h5></a>
             <h5>날짜: <%= posts[i].date %></h5>
           </li>
           <% } %> 
