@@ -10,14 +10,25 @@
             <a class="nav-link active" aria-current="page" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/post/write">Write</a>
+            <a class="nav-link" href="/post/write" id="islog">Write</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/post/list">List</a>
+            <a class="nav-link" href="/post/list" id="islog">List</a>
           </li>
         </ul>
-        <button class="btn btn-outline-primary my-2 my-sm-0" type="buttoln" ><a href="/signin">로그인</a></button>
-        <button class="btn btn-outline-primary my-2 my-sm-0" type="buttoln"><a href="/signup">회원가입</a></button>
+        <button class="btn btn-outline-primary my-2 my-sm-0" type="button" ><a href="/signin">로그인</a></button>
+        <button class="btn btn-outline-primary my-2 my-sm-0" type="button"><a href="/signup">회원가입</a></button>
       </div>
     </div>
   </nav>
+<script>
+  // $('#islog').click(function isLogin(req, rsp, next) {
+  //   if (req.user) {
+  //     console.log(req.user)
+  //     next()
+  //   } else {
+  //     alert('회원만 이용 가능합니다.')
+  //     rsp.redirect('/signin')
+  //   }
+  // })
+</script>
