@@ -57,18 +57,19 @@ router.delete('/delete', function (req, rsp) {
 
     let deleteData = {_id: req.body._id, writer: req.user.userId}
 
-        //.deleteOne({쿼리},)
+    //.deleteOne({쿼리},)
     req.app.db.collection('post').deleteOne(deleteData, function (err, res) {
-        if (res) {
-            rsp.status(200).send({message: 'success'});
-            console.log('삭제완료');
-        } else {
-            console.log(err)
-            rsp.status(401).send({message: 'failed'})
+        if (res != null) {
+            console.log(res)
+            if (res.deletedCount == 1) {
+                rsp.status(200).json({message: 'success'})
+                console.log('삭제완료');
+            } else {
+                rsp.status(401).json({message: 'fail'})
+            }
         }
     })
 })
-
 router.get('/read/:id', function (req, rsp) {
     req.app.db.collection('post').findOne({_id: parseInt(req.params.id)}, function (err, res) {
         if (res) {
@@ -90,7 +91,7 @@ router.get('/edit/:id', function (req, rsp) {
         console.log(res)
         if (res != null) {
             // if(res.user.userId == editData.writer) {
-                rsp.status(200).render('edit.ejs', {post: res});
+            rsp.status(200).render('edit.ejs', {post: res});
             // }else{
             //     next();
             // }
@@ -99,7 +100,6 @@ router.get('/edit/:id', function (req, rsp) {
         }
     })
 })
-
 router.put('/edit', function (req, rsp) {
     // $set은 업데이트 혹은 널값이면 인서트.
     req.app.db.collection('post').updateOne({_id: parseInt(req.body.id)},
@@ -108,6 +108,5 @@ router.put('/edit', function (req, rsp) {
             rsp.redirect('/post/list')
         })
 })
-
 
 module.exports = router;

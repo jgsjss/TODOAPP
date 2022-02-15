@@ -49,14 +49,11 @@
             alert('삭제가 완료되었습니다.')
             window.location.replace('http://localhost:8000/post/list')
           } else{
-            alert('본인이 작성한 글만 삭제 가능합니다.')
-            window.location.replace('http://localhost:8000/post/read/postNo')
-
+            window.location.replace('http://localhost:8000/post/list')
           }
-        }).err(() => {
-          fail(function (xhr, textStatus, errorThrown) {
-            console.log(xhr, textStatus, errorThrown);
-          })
+        }).fail(function(err){
+          alert('본인이 작성한 글만 삭제 가능합니다.')
+          window.location.reload()
         })
       })
     </script>
