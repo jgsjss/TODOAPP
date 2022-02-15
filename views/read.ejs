@@ -44,16 +44,16 @@
           url: '/post/delete',
           data: {_id: postNo}
           //done(function(){}) 를 안쓴이유는 그래야 $(this) 값이 변형되지 않기때문이다.
-        }).done((res) => {
-          if(res.message == "success") {
+        }).then((res) => {
+          if(res.data == "success") {
             alert('삭제가 완료되었습니다.')
             window.location.replace('http://localhost:8000/post/list')
-          } else{
+          } else if(res.data == 'fail'){
             window.location.replace('http://localhost:8000/post/list')
           }
         }).fail(function(err){
           alert('본인이 작성한 글만 삭제 가능합니다.')
-          window.location.reload()
+          // window.location.reload()
         })
       })
     </script>

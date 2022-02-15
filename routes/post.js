@@ -10,10 +10,7 @@ function isLogin(req, rsp, next) {
         rsp.redirect('/signin')
     }
 }
-
-
 router.use(isLogin);
-
 
 router.get('/write', function (req, rsp) {
     rsp.render('write.ejs', {user: req.user})
@@ -86,9 +83,13 @@ router.get('/edit/:id', function (req, rsp) {
 
     let editData = {_id: parseInt(req.params.id), writer: req.user.userId}
 
+
+
     req.app.db.collection('post').findOne(editData, function (err, res, next) {
         console.log(err)
         console.log(res)
+        let id = req.params.id;
+
         if (res != null) {
             // if(res.user.userId == editData.writer) {
             rsp.status(200).render('edit.ejs', {post: res});
@@ -96,7 +97,7 @@ router.get('/edit/:id', function (req, rsp) {
             //     next();
             // }
         } else {
-            rsp.status(401).write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace(`/post/list`)</script> </head>")
+            rsp.status(401).write("<head><meta charset='UTF-8'><script> alert('작성자만 수정 가능합니다.'); location.replace(`/post/list/');</script> </head>")
         }
     })
 })
