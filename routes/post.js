@@ -97,7 +97,7 @@ router.get('/edit/:id', function (req, rsp) {
             //     next();
             // }
         } else {
-            rsp.status(401).write("<head><meta charset='UTF-8'><script> alert('작성자만 수정 가능합니다.'); location.replace(`/post/list/');</script> </head>")
+            rsp.write("<head><meta charset='UTF-8'><script>alert('작성자만 수정 가능합니다.'); location.replace('http://localhost:8000/post/list');</script></head>")
         }
     })
 })

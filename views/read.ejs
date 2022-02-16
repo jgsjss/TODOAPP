@@ -45,10 +45,10 @@
           data: {_id: postNo}
           //done(function(){}) 를 안쓴이유는 그래야 $(this) 값이 변형되지 않기때문이다.
         }).then((res) => {
-          if(res.data == "success") {
+          if(res.message == "success") {
             alert('삭제가 완료되었습니다.')
             window.location.replace('http://localhost:8000/post/list')
-          } else if(res.data == 'fail'){
+          } else if(res.message == 'fail'){
             window.location.replace('http://localhost:8000/post/list')
           }
         }).fail(function(err){
