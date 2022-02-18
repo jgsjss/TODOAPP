@@ -48,7 +48,9 @@ app.use(passport.session());
 //express 내장기능 json 사용
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static('public'))
+// app.use(express.static(path.join(__dirname, 'public')))
+
 
 app.use('/post', postRouter);
 

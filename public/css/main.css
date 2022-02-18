@@ -1,5 +1,14 @@
 .main-background{
-    background-image: url("asset/image/Wallpaper_1080p_(71).jpg");
+    background-image: url("/image/Wallpaper_1080p_(71).jpg");
     background-size: cover;
-    color: white;
+    color: darkgoldenrod;
+}
+
+.collapse-wrap{
+    display: flex;
+    justify-content: space-between
+}
+
+.login{
+    display: flex;
 }
