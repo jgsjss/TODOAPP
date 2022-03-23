@@ -14,23 +14,21 @@ const {Db} = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
 
 
-
 // const bcrypt = require('bcrypt')
 require('dotenv').config();
 app.set('view engine', 'ejs');
 
 let db;
-MongoClient.connect(process.env.DB_URL, function (err, client) {
+MongoClient.connect("mongodb+srv://admin:1234@cluster0.lkny9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", function (err, client) {
     if (err) return console.log(err);
     db = client.db('Todo')
     //라우터로 분리한 코드에서 몽고db 기능을 사용하려면 app.db = db; 작성한다.
     app.db = db;
 
-    app.listen(process.env.PORT, function () {
+    app.listen(8000, function () {
         console.log('listening on 8000');
     });
 })
-
 
 
 // app.use(express.static(path.join(__dirname, '../public')))
