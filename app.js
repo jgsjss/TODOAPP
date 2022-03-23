@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
-const {redirect} = require('express/lib/response');
-const rsp = require('express/lib/response');
-const req = require('express/lib/request');
+// const bodyParser = require('body-parser')
+// const {redirect} = require('express/lib/response');
+// const rsp = require('express/lib/response');
+// const req = require('express/lib/request');
 const methodOverride = require('method-override');
 const postRouter = require('./routes/post.js');
 const path = require('path');
@@ -15,7 +15,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 
 
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 require('dotenv').config();
 app.set('view engine', 'ejs');
 
@@ -36,7 +36,7 @@ MongoClient.connect(process.env.DB_URL, function (err, client) {
 // app.use(express.static(path.join(__dirname, '../public')))
 
 //최신 버전 express에 bodyParser 내장됨
-app.use(bodyParser.urlencoded({extended: true}));
+// app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(methodOverride('_method'))
 
